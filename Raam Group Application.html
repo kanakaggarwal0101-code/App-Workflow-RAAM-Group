@@ -1,0 +1,567 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Raam Owner App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Onest:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#F1F2F4; --panel:#FFFFFF; --ink:#16181D; --muted:#596070; --line:#E1E3E8;
+  --accent:#9E2A2B; --accent-ink:#FFFFFF; --accent-soft:#F6E4E2; --ok:#13776B; --ok-soft:#E3F2EF;
+  --bezel:#0E0F12;
+  /* app palette (fixed, the app itself is a light UI) */
+  --a-bg:#F7F6F4; --a-card:#FFFFFF; --a-ink:#17181C; --a-muted:#5E6270; --a-line:#E6E4E1; --a-dark:#17181C;
+  --ease:cubic-bezier(.22,.8,.26,1);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0F1114; --panel:#181B20; --ink:#ECEDF0; --muted:#A3A8B4; --line:#2A2E36;
+    --accent:#D0585A; --accent-ink:#1A0C0C; --accent-soft:#3A1D1E; --ok:#4FB8A9; --ok-soft:#16302C; --bezel:#000000;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0F1114; --panel:#181B20; --ink:#ECEDF0; --muted:#A3A8B4; --line:#2A2E36;
+  --accent:#D0585A; --accent-ink:#1A0C0C; --accent-soft:#3A1D1E; --ok:#4FB8A9; --ok-soft:#16302C; --bezel:#000000;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Onest',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px;line-height:1.5;padding-inline:20px}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,label:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1160px;margin:0 auto;padding-block:40px 56px;display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:56px;align-items:start}
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:24px 40px}.phone-col{order:-1}}
+
+/* ---------- left: explainer ---------- */
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:'Sora',ui-sans-serif,system-ui,sans-serif;font-size:clamp(34px,4.6vw,52px);line-height:1.05;letter-spacing:-.02em;margin:10px 0 14px;text-wrap:balance}
+.lede{font-size:17px;color:var(--muted);max-width:56ch;margin:0}
+.jump{display:flex;flex-wrap:wrap;gap:8px;margin:28px 0 22px}
+.jump button{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:9px 14px;font-size:14px;font-weight:600;min-height:40px;transition:background .2s var(--ease),border-color .2s var(--ease),color .2s var(--ease)}
+.jump button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.explain{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px 24px;display:grid;gap:16px}
+.explain h2{font-family:'Sora',ui-sans-serif,system-ui,sans-serif;font-size:22px;margin:0;letter-spacing:-.01em}
+.explain p{margin:0;color:var(--muted)}
+.ex-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:560px){.ex-grid{grid-template-columns:minmax(0,1fr)}}
+.ex-block{display:grid;gap:4px;align-content:start}
+.ex-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.ex-val{font-size:14.5px;font-weight:600}
+.ex-back{display:inline-flex;align-items:center;gap:8px;background:var(--accent-soft);color:var(--ink);border-radius:10px;padding:8px 12px;font-size:14px;font-weight:600;width:fit-content}
+.ex-back .gear{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none}
+.hint{font-size:13px;color:var(--muted);margin-top:14px}
+.fade-swap{animation:fadeUp .38s var(--ease)}
+@keyframes fadeUp{from{opacity:.001;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- right: phone ---------- */
+.phone-col{position:sticky;top:calc(env(safe-area-inset-top,0px) + 24px);display:flex;justify-content:center}
+@media (max-width:900px){.phone-col{position:static}}
+.phone{width:min(390px,100%);aspect-ratio:390/820;max-height:820px;background:var(--bezel);border-radius:48px;padding:12px;box-shadow:0 30px 60px -30px rgba(15,17,20,.45)}
+.screen{position:relative;width:100%;height:100%;border-radius:37px;overflow:hidden;background:var(--a-bg);color:var(--a-ink);font-size:14px}
+.notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:104px;height:28px;border-radius:16px;background:var(--bezel);z-index:30}
+
+.view{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;transform:translateX(24px);pointer-events:none;transition:opacity .34s var(--ease),transform .34s var(--ease)}
+.view.active{opacity:1;transform:none;pointer-events:auto}
+.view.leave{opacity:0;transform:translateX(-24px)}
+.top{display:flex;align-items:center;gap:10px;padding:52px 18px 10px}
+.top .t{display:grid;flex:1}
+.kick{font-size:11.5px;color:var(--a-muted);font-weight:600}
+.ttl{font-family:'Sora',ui-sans-serif,system-ui,sans-serif;font-size:20px;font-weight:700;letter-spacing:-.01em}
+.back{width:40px;height:40px;border-radius:50%;border:1px solid var(--a-line);background:var(--a-card);display:grid;place-items:center;color:var(--a-ink)}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--accent-a,#9E2A2B);color:#fff;display:grid;place-items:center;font-weight:700;font-size:12.5px;flex:none}
+.body{flex:1;overflow-y:auto;padding:4px 18px 18px;display:flex;flex-direction:column;gap:12px;scrollbar-width:none}
+.body::-webkit-scrollbar{display:none}
+.card{background:var(--a-card);border:1px solid var(--a-line);border-radius:16px;padding:14px}
+.dark-card{background:var(--a-dark);color:#fff;border-radius:18px;padding:16px}
+.sub{font-size:12px;color:var(--a-muted)}
+.dark-card .sub{color:#BDBFC6}
+.big{font-family:'Sora',ui-sans-serif,system-ui,sans-serif;font-weight:700;font-size:21px;letter-spacing:-.01em}
+.lbl{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--a-muted)}
+.btn{height:46px;border:0;border-radius:13px;background:#9E2A2B;color:#fff;font-weight:700;font-size:14.5px;width:100%;transition:transform .15s var(--ease),filter .2s,opacity .2s}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:var(--a-card);color:#9E2A2B;border:1px dashed #9E2A2B}
+.btn.outline{background:var(--a-card);color:var(--a-ink);border:1px solid #CFCCC8}
+.btn.okb{background:#13776B}
+.btn.darkb{background:var(--a-dark)}
+.row{display:flex;align-items:center;gap:10px}
+.between{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{text-align:left;background:var(--a-card);border:1px solid var(--a-line);border-radius:16px;padding:14px;display:grid;gap:3px;color:var(--a-ink);min-height:84px;align-content:end;transition:transform .2s var(--ease),border-color .2s}
+.tile:hover{border-color:#C9C5C1;transform:translateY(-1px)}
+.tile b{font-size:14.5px}
+.chip{font-size:11.5px;font-weight:700;border-radius:8px;padding:4px 8px;white-space:nowrap}
+.chip.ok{color:#13776B;background:#E3F2EF}
+.chip.due{color:#7E2021;background:#F6E4E2}
+.list .item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #F0EEEB}
+.list .item:last-child{border-bottom:0}
+.pick{text-align:left;width:100%;background:var(--a-card);border:1px solid var(--a-line);border-radius:15px;padding:13px 14px;display:grid;gap:3px;color:var(--a-ink);transition:border-color .2s var(--ease),box-shadow .2s var(--ease),transform .2s var(--ease)}
+.pick[aria-pressed="true"]{border-color:#9E2A2B;box-shadow:0 0 0 1px #9E2A2B inset}
+.pick:hover{transform:translateY(-1px)}
+.reveal{display:grid;grid-template-rows:0fr;transition:grid-template-rows .36s var(--ease),opacity .3s;opacity:0}
+.reveal.open{grid-template-rows:1fr;opacity:1}
+.reveal>div{overflow:hidden;display:grid;gap:10px}
+.bar{height:6px;border-radius:3px;background:#EFEDEA;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:3px;width:0;transition:width .9s var(--ease)}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--a-card);border:1px solid var(--a-line);border-radius:14px;padding:12px 14px;font-weight:600;min-height:46px;cursor:pointer}
+.switch{position:relative;width:42px;height:24px;flex:none}
+.switch input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.switch span{position:absolute;inset:0;border-radius:12px;background:#D6D3CF;transition:background .25s var(--ease)}
+.switch span::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .25s var(--ease)}
+.switch input:checked+span{background:#9E2A2B}
+.switch input:checked+span::after{transform:translateX(18px)}
+.tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));background:var(--a-card);border-top:1px solid var(--a-line);padding:6px 6px 20px}
+.tabs button{border:0;background:none;display:grid;justify-items:center;gap:3px;font-size:10.5px;font-weight:700;color:var(--a-muted);min-height:48px;align-content:center}
+.tabs button svg{width:20px;height:20px}
+.tabs button[aria-current="page"]{color:#9E2A2B}
+/* tracker */
+.steps{position:relative;display:grid;gap:2px;padding:6px 0}
+.step{display:grid;grid-template-columns:18px 1fr;gap:12px;align-items:start;padding:7px 0}
+.dot{width:14px;height:14px;border-radius:50%;background:#E3E0DC;margin-top:3px;position:relative;transition:background .3s var(--ease),transform .3s var(--ease)}
+.step.done .dot{background:#13776B}
+.step.now .dot{background:#fff;border:4px solid #9E2A2B;transform:scale(1.15)}
+.step.now .dot::after{content:"";position:absolute;inset:-7px;border-radius:50%;border:2px solid #9E2A2B;opacity:.5;animation:pulse 1.6s ease-out infinite}
+@keyframes pulse{from{transform:scale(.6);opacity:.6}to{transform:scale(1.25);opacity:0}}
+.step .n{font-weight:600;color:#8D8A86;transition:color .3s}
+.step.done .n,.step.now .n{color:var(--a-ink)}
+.step.now .n{font-weight:800}
+.progress{height:4px;border-radius:2px;background:rgba(255,255,255,.18);overflow:hidden;margin-top:10px}
+.progress i{display:block;height:100%;background:#fff;width:0;transition:width .6s var(--ease)}
+.approve{border:2px solid #9E2A2B}
+.photo{height:112px;border-radius:12px;background:repeating-linear-gradient(135deg,#F1EEEB 0 10px,#EAE6E2 10px 20px);display:grid;place-items:center;font-size:12.5px;color:var(--a-muted);font-weight:600}
+.pop{animation:popIn .42s var(--ease)}
+@keyframes popIn{from{opacity:.001;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+/* chat */
+.msgs{display:flex;flex-direction:column;gap:8px}
+.msg{max-width:80%;padding:9px 12px;border-radius:15px;line-height:1.4;animation:popIn .3s var(--ease)}
+.msg.them{background:var(--a-card);border:1px solid var(--a-line);border-bottom-left-radius:5px;align-self:flex-start}
+.msg.me{background:#9E2A2B;color:#fff;border-bottom-right-radius:5px;align-self:flex-end}
+.typing{align-self:flex-start;display:flex;gap:4px;padding:12px 14px;background:var(--a-card);border:1px solid var(--a-line);border-radius:15px}
+.typing i{width:6px;height:6px;border-radius:50%;background:#A09C97;animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
+.compose{display:flex;gap:8px}
+.compose input{flex:1;height:44px;border-radius:12px;border:1px solid #CFCCC8;padding:0 12px;font:inherit;background:var(--a-card);color:var(--a-ink);min-width:0}
+.compose .btn{width:auto;padding:0 16px;height:44px}
+.sla{background:#F6E4E2;border-radius:12px;padding:10px 12px;font-size:12.5px;display:flex;gap:10px;align-items:center}
+.sla b{font-variant-numeric:tabular-nums}
+/* toast */
+.toast{position:absolute;left:12px;right:12px;top:46px;z-index:40;background:rgba(23,24,28,.94);color:#fff;border-radius:16px;padding:11px 14px;display:flex;gap:10px;align-items:center;font-size:12.5px;transform:translateY(-130%);opacity:0;transition:transform .45s var(--ease),opacity .3s}
+.toast.show{transform:none;opacity:1}
+.toast .tdot{width:8px;height:8px;border-radius:50%;background:#E0797A;flex:none}
+.months{display:flex;gap:4px;margin-top:4px}
+.months i{height:8px;flex:1;border-radius:4px;background:#3E3F45;transform-origin:left;animation:grow .5s var(--ease) both}
+.months i.paid{background:#fff}.months i.bonus{background:#E0797A}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.num{font-variant-numeric:tabular-nums}
+.onb-dots{display:flex;gap:6px}
+.onb-dots i{height:4px;flex:1;border-radius:2px;background:#E3E0DC;transition:background .35s var(--ease)}
+.onb-dots i.on{background:#9E2A2B}
+.onb-panel{display:none;gap:14px}
+.onb-panel.active{display:grid;animation:fadeUp .4s var(--ease)}
+.onb h3{font-family:'Sora',ui-sans-serif,system-ui,sans-serif;font-size:27px;line-height:1.12;letter-spacing:-.02em;margin:0}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
+</style>
+
+<div class="wrap">
+  <section aria-labelledby="h">
+    <div class="eyebrow">Raam Group · Application prototype</div>
+    <h1 id="h">One app, one owner, from handover to trade-in</h1>
+    <p class="lede">Every Raam customer gets a named advisor, a fixed price before any work and a live view of their car. Tap through the phone, or jump to a part of the journey.</p>
+
+    <div class="jump" role="group" aria-label="Jump to a screen">
+      <button type="button" data-go="onb">Onboarding</button>
+      <button type="button" data-go="home">Home</button>
+      <button type="button" data-go="book">Book a Service</button>
+      <button type="button" data-go="track">Live tracking</button>
+      <button type="button" data-go="advisor">My Advisor</button>
+      <button type="button" data-go="car">My Car</button>
+      <button type="button" data-go="wallet">Wallet &amp; Value</button>
+    </div>
+
+    <div class="explain" id="explain" aria-live="polite"></div>
+    <p class="hint">Prototype with sample data (names, prices and dates are illustrative).</p>
+  </section>
+
+  <div class="phone-col">
+    <div class="phone">
+      <div class="screen" id="app">
+        <div class="notch" aria-hidden="true"></div>
+        <div class="toast" id="toast" role="status"><span class="tdot"></span><span id="toastText"></span></div>
+
+        <!-- ONBOARDING -->
+        <section class="view onb" data-view="onb" aria-label="Onboarding">
+          <div class="body" style="padding:60px 24px 24px;gap:18px">
+            <div class="onb-dots"><i class="on"></i><i></i><i></i></div>
+            <div class="lbl" style="color:#9E2A2B">At car handover</div>
+            <div class="onb-panel active" data-step="0">
+              <h3>Your car is linked to the Raam app</h3>
+              <p class="sub" style="font-size:14px;margin:0">Set up by your sales executive at delivery. No forms to fill.</p>
+              <div class="card" style="display:grid;gap:4px">
+                <span class="sub">Vehicle</span>
+                <span style="font-weight:700;font-size:17px">MG Hector · Sharp Pro</span>
+                <span class="sub">VIN linked · Delivered today</span>
+              </div>
+            </div>
+            <div class="onb-panel" data-step="1">
+              <h3>Meet your named advisor</h3>
+              <p class="sub" style="font-size:14px;margin:0">One person looks after you and this car, for as long as you own it.</p>
+              <div class="card row" style="gap:14px">
+                <span class="avatar" style="width:50px;height:50px;font-size:16px">PS</span>
+                <span style="display:grid;gap:2px"><b style="font-size:16px">Priya Sharma</b><span class="sub">Service advisor · Raam MG Kondapur</span><span style="font-size:12.5px;color:#13776B;font-weight:600">Replies within 10 minutes</span></span>
+              </div>
+            </div>
+            <div class="onb-panel" data-step="2">
+              <h3>Nothing from your purchase gets forgotten</h3>
+              <p class="sub" style="font-size:14px;margin:0">Every open item from the sale has an owner and a due date.</p>
+              <div class="card list" style="padding:4px 14px">
+                <div class="item"><span style="font-weight:600">Accessories kit</span><span class="chip ok">Fitted</span></div>
+                <div class="item"><span style="font-weight:600">RC &amp; number plate</span><span class="chip ok">Done</span></div>
+                <div class="item"><span style="font-weight:600">EV home charger</span><span class="chip due">Due 30 Sep</span></div>
+              </div>
+            </div>
+            <div style="flex:1"></div>
+            <button type="button" class="btn" id="onbNext" style="height:52px">Continue</button>
+          </div>
+        </section>
+
+        <!-- IN-APP SHELL: header + views + tabs -->
+        <div id="shell" style="position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .34s var(--ease)">
+          <header class="top">
+            <button type="button" class="back" id="back" aria-label="Back" hidden>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <div class="t"><span class="kick" id="kick"></span><span class="ttl" id="ttl"></span></div>
+            <span class="avatar" aria-hidden="true">RK</span>
+          </header>
+          <div style="position:relative;flex:1">
+
+            <!-- HOME -->
+            <section class="view" data-view="home" aria-label="Home">
+              <div class="body">
+                <div class="dark-card" style="display:grid;gap:12px">
+                  <div style="display:grid;gap:2px"><span class="sub">MG Hector · Sharp Pro</span><span class="big">Next service in 1,200 km</span><span class="sub">or by 18 Oct, whichever comes first</span></div>
+                  <button type="button" class="btn" data-nav="book">Book a service</button>
+                </div>
+                <div class="g2">
+                  <button type="button" class="tile" data-nav="wallet"><span class="sub">Harvest Wallet</span><b class="big num wallet-amt">₹7,200</b></button>
+                  <button type="button" class="tile" data-nav="wallet"><span class="sub">Trade-in floor</span><b class="big num">₹9.4 L</b></button>
+                </div>
+                <div class="tile" style="padding:0;min-height:0;height:auto;flex:none;display:block;overflow:hidden">
+                  <button type="button" data-nav="advisor" style="all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px 16px">
+                    <span class="avatar" style="width:40px;height:40px;flex:none">PS</span>
+                    <span style="display:grid;gap:3px;flex:1;min-width:0"><b style="font-size:15px">Priya Sharma <span style="font-weight:500;color:#6B6B6B;font-size:12.5px">· Advisor</span></b><span style="font-size:12.5px;color:#6B6B6B;display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:50%;background:#13A36B;flex:none"></span>Replies in 10 min</span></span>
+                    <span style="color:#9E2A2B;font-weight:700;font-size:13px;background:#F6E4E2;padding:7px 12px;border-radius:999px">Chat</span>
+                  </button>
+                  <button type="button" data-nav="car" style="all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid #ECEAE6">
+                    <span style="width:40px;height:40px;flex:none;border-radius:12px;background:#FFF4E0;display:grid;place-items:center;color:#B26A00;font-weight:800">!</span>
+                    <span style="display:grid;gap:3px;flex:1;min-width:0"><b style="font-size:14.5px;white-space:nowrap">EV home charger</b><span style="font-size:12.5px;color:#6B6B6B;white-space:nowrap">Pending from delivery</span></span>
+                    <span style="font-size:12px;font-weight:700;color:#B26A00;background:#FFF4E0;padding:6px 10px;border-radius:999px;white-space:nowrap">30 Sep</span>
+                  </button>
+                </div>
+                <div class="lbl" style="margin-top:2px">Options</div>
+                <div class="g2">
+                  <button type="button" class="tile" data-nav="book"><b>Book a Service</b><span class="sub">Fixed prices, live status</span></button>
+                  <button type="button" class="tile" data-nav="advisor"><b>My Advisor</b><span class="sub">One person, one chat</span></button>
+                  <button type="button" class="tile" data-nav="car"><b>My Car</b><span class="sub">Reminders, history</span></button>
+                  <button type="button" class="tile" data-nav="wallet"><b>Wallet &amp; Value</b><span class="sub">Credits, trade-in</span></button>
+                </div>
+              </div>
+            </section>
+
+            <!-- BOOK: MODE -->
+            <section class="view" data-view="book" aria-label="Book a service">
+              <div class="body">
+                <span class="sub" style="font-size:13.5px">How would you like to service your car?</span>
+                <div id="modes" style="display:grid;gap:10px"></div>
+                <div class="reveal" id="bundleWrap"><div><span class="lbl">Fixed rate card</span><div id="bundles" style="display:grid;gap:8px"></div></div></div>
+                <div class="reveal" id="noteWrap"><div><div class="card" id="modeNote" style="background:#F6E4E2;border-color:#F6E4E2;font-size:13px"></div></div></div>
+                <button type="button" class="btn" id="toSlot" disabled>Choose a slot</button>
+              </div>
+            </section>
+
+            <!-- BOOK: SLOT -->
+            <section class="view" data-view="slot" aria-label="Choose a slot">
+              <div class="body">
+                <span class="lbl">Centre · live occupancy</span>
+                <div id="centres" style="display:grid;gap:9px"></div>
+                <span class="lbl" style="margin-top:4px">Tomorrow</span>
+                <div class="g2" id="times"></div>
+                <label class="toggle" for="pickup">Free pickup &amp; drop from home
+                  <span class="switch"><input type="checkbox" id="pickup" checked><span></span></span>
+                </label>
+                <div class="card between"><span class="sub" style="font-size:13px">Fixed quote</span><b class="big num" id="quote"></b></div>
+                <button type="button" class="btn" id="confirm">Confirm booking</button>
+              </div>
+            </section>
+
+            <!-- TRACK -->
+            <section class="view" data-view="track" aria-label="Live service tracking">
+              <div class="body">
+                <div class="dark-card">
+                  <div class="between"><span class="sub" id="bookLine"></span><span class="chip" style="background:#9E2A2B;color:#fff">LIVE</span></div>
+                  <div class="big" id="eta" style="margin-top:4px">Ready by 5:30 PM</div>
+                  <div class="progress"><i id="prog"></i></div>
+                </div>
+                <div class="card" style="padding:6px 14px"><div class="steps" id="steps"></div></div>
+                <div id="trackAction" style="display:grid;gap:10px"></div>
+              </div>
+            </section>
+
+            <!-- ADVISOR -->
+            <section class="view" data-view="advisor" aria-label="My advisor">
+              <div class="body">
+                <div class="card row" style="gap:12px"><span class="avatar" style="width:44px;height:44px">PS</span><span style="display:grid"><b style="font-size:15.5px">Priya Sharma</b><span class="sub">Your advisor since delivery · Kondapur</span></span></div>
+                <div class="sla" id="sla"><span>Priya replies within 10 minutes. If not, your chat goes to the Service Manager automatically.</span></div>
+                <div class="msgs" id="msgs"></div>
+                <form class="compose" id="compose">
+                  <label for="draft" style="position:absolute;width:1px;height:1px;overflow:hidden">Message Priya</label>
+                  <input id="draft" placeholder="Message Priya…" autocomplete="off">
+                  <button type="submit" class="btn">Send</button>
+                </form>
+                <span class="lbl" style="margin-top:6px">How we contact you</span>
+                <label class="toggle" for="p1">Updates in app chat<span class="switch"><input type="checkbox" id="p1" checked><span></span></span></label>
+                <label class="toggle" for="p2">Calls only for urgent issues<span class="switch"><input type="checkbox" id="p2" checked><span></span></span></label>
+                <label class="toggle" for="p3">Offers and promotions<span class="switch"><input type="checkbox" id="p3"><span></span></span></label>
+              </div>
+            </section>
+
+            <!-- CAR -->
+            <section class="view" data-view="car" aria-label="My car">
+              <div class="body">
+                <div class="card" style="display:grid;gap:3px"><span class="lbl">Reminders</span><b>Periodic service · 1,200 km or 18 Oct</b><span class="sub">Insurance renewal in 42 days</span></div>
+                <div class="card list" style="padding:10px 14px 4px"><span class="lbl">Delivery tracker</span>
+                  <div class="item"><span style="font-weight:600">Accessories kit</span><span class="chip ok">Fitted</span></div>
+                  <div class="item"><span style="font-weight:600">RC &amp; number plate</span><span class="chip ok">Done</span></div>
+                  <div class="item"><span style="font-weight:600">EV home charger</span><span class="chip due">Due 30 Sep</span></div>
+                </div>
+                <div class="card list" style="padding:10px 14px 4px"><span class="lbl">Service history · on the VIN</span>
+                  <div class="item"><span style="display:grid"><span style="font-weight:600">2nd free service</span><span class="sub">10,000 km · Attapur · Aug 2026</span></span><span class="chip ok">Verified</span></div>
+                  <div class="item"><span style="display:grid"><span style="font-weight:600">1st free service</span><span class="sub">1,000 km · Kondapur · Mar 2026</span></span><span class="chip ok">Verified</span></div>
+                </div>
+                <div class="card between"><span style="display:grid"><b>Insurance</b><span class="sub">Renewal quote ready · claim status</span></span><span class="chip due">42 days</span></div>
+                <div class="card between"><span style="display:grid"><b>EV Care</b><span class="sub">Battery health 98% · software up to date</span></span><span class="chip ok">Good</span></div>
+              </div>
+            </section>
+
+            <!-- WALLET -->
+            <section class="view" data-view="wallet" aria-label="Wallet and value">
+              <div class="body">
+                <div class="dark-card" style="display:grid;gap:6px">
+                  <span class="sub">Harvest Wallet</span>
+                  <span class="big num wallet-amt" style="font-size:30px">₹7,200</span>
+                  <div class="months" id="months"></div>
+                  <span class="sub">₹800 / month · 8 of 10 paid · month 11 added by Raam</span>
+                </div>
+                <div class="g2">
+                  <div class="card" style="display:grid;gap:2px"><span class="sub">Off-peak &amp; referral credits</span><b class="big num" id="credits">₹450</b></div>
+                  <div class="card" style="display:grid;gap:2px"><span class="sub">Loyalty Lock</span><b class="big num" id="streak">3 on-time</b></div>
+                </div>
+                <div class="card" style="display:grid;gap:4px"><span class="lbl">Unlocked by your streak</span><b>Warranty +10,000 km · Pan-India RSA renewed</b></div>
+                <div class="card" style="background:#F6E4E2;border-color:#F6E4E2;display:grid;gap:4px"><span class="lbl" style="color:#7E2021">Guaranteed trade-in floor</span><span class="big num" style="font-size:26px">₹9.4 L</span><span style="font-size:13px">Rises with every on-time Raam service. Valued by EPiC Reassured.</span></div>
+              </div>
+            </section>
+          </div>
+
+          <nav class="tabs" aria-label="App sections">
+            <button type="button" data-tab="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</button>
+            <button type="button" data-tab="book"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>Service</button>
+            <button type="button" data-tab="advisor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Advisor</button>
+            <button type="button" data-tab="car"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M6 17l1.5-5h9L18 17M7 17v2M17 17v2"/><circle cx="8" cy="14.5" r=".5"/><circle cx="16" cy="14.5" r=".5"/></svg>Car</button>
+            <button type="button" data-tab="wallet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M16 13h2M3 10h18"/></svg>Wallet</button>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+  const inr=n=>'₹'+n.toLocaleString('en-IN');
+  const S={view:'onb',onb:0,mode:null,bundle:0,centre:1,time:2,pickup:true,stage:0,extra:0,decided:false,paid:false,fixed:null,wallet:7200,credits:450,streak:3,timer:null,sla:null};
+
+  const EXPLAIN={
+    onb:{h:'Onboarding at handover',p:'The app is installed and linked to the car before the customer drives off. A named advisor is assigned and every open item from the sale is tracked.',does:'Car linked by VIN, advisor assigned, delivery tracker loaded',fixes:'Loose ends at handover'},
+    home:{h:'Home screen',p:'One glance: next service due, wallet balance, trade-in value, the advisor and any open items. Four options branch from here.',does:'Service due, wallet, trade-in value, advisor, open items',fixes:'Nothing links one visit to the next'},
+    book:{h:'Book a Service',p:'Four ways to book, each at a fixed price: Express for known jobs, Diagnostic at the centre, Home Visit, and RSA & Accident.',does:'Pick a mode and a fixed-price bundle',fixes:'Bill shock and upselling',back:'Fixed rate card for every centre'},
+    slot:{h:'Smart slot booking',p:'The app suggests the best centre and time using live occupancy. Choosing a quiet slot earns wallet credit, which spreads demand across the day.',does:'Compare centres, pick a slot, add pickup & drop',fixes:'Waiting despite an appointment',back:'Predictive analytics: occupancy across locations and time slots'},
+    track:{h:'Live tracking and approvals',p:'Pickup, each service stage and the ready time update live. Any extra job needs a photo and the customer\'s approval, the bill is capped at the quote, and a check 48 hours later reopens the job free if it isn\'t fixed.',does:'Track, approve extra work, pay, confirm the fix',fixes:'Unexplained bills and problems not fixed first time',back:'Auto alerts push each stage to the phone'},
+    advisor:{h:'My Advisor',p:'One named person, one chat. Every message gets a reply within 10 minutes or escalates to the manager. The advisor reaches out before a service is missed, and the customer chooses how to be contacted.',does:'Chat, reply promise, proactive outreach, contact preferences',fixes:'No one owns the customer after the sale',back:'Auto alerts track the car\'s lifecycle and service times'},
+    car:{h:'My Car',p:'Reminders, the delivery tracker, the service history on the VIN, insurance and EV care in one place.',does:'Reminders, delivery tracker, history, insurance, EV care',fixes:'Missed services and forgotten items',back:'Auto alerts nudge the customer\'s phone'},
+    wallet:{h:'Wallet & Value',p:'The Harvest Wallet turns the first paid bill into small monthly savings. Credits, the Loyalty Lock streak and a guaranteed trade-in floor make staying with Raam worth more over time.',does:'Harvest Wallet, credits, Loyalty Lock, trade-in floor',fixes:'The free-to-paid cliff',back:'Trade-in floor priced by EPiC Reassured'}
+  };
+  const TITLES={home:['Good morning, Rahul','Home'],book:['Book a Service','Choose how'],slot:['Book a Service','Pick a slot'],track:['Service in progress','Live tracking'],advisor:['My Advisor','Chat'],car:['My Car','MG Hector'],wallet:['Wallet & Value','Your value']};
+  const TAB={home:'home',book:'book',slot:'book',track:'book',advisor:'advisor',car:'car',wallet:'wallet'};
+  const JUMP={onb:'onb',home:'home',book:'book',slot:'book',track:'track',advisor:'advisor',car:'car',wallet:'wallet'};
+
+  function renderExplain(v){
+    const e=EXPLAIN[v]; const box=$('#explain');
+    box.innerHTML='<h2>'+e.h+'</h2><p>'+e.p+'</p><div class="ex-grid"><div class="ex-block"><span class="ex-label">What the customer does</span><span class="ex-val">'+e.does+'</span></div><div class="ex-block"><span class="ex-label">Gap it closes</span><span class="ex-val">'+e.fixes+'</span></div></div>'+(e.back?'<span class="ex-back"><span class="gear"></span>Backend: '+e.back+'</span>':'');
+    box.classList.remove('fade-swap'); void box.offsetWidth; box.classList.add('fade-swap');
+    $$('.jump button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.go===JUMP[v])));
+  }
+
+  function show(v){
+    const prev=S.view; S.view=v;
+    const shell=$('#shell'), onb=$('[data-view="onb"]');
+    if(v==='onb'){shell.style.opacity=0;shell.style.pointerEvents='none';onb.classList.add('active');}
+    else{
+      onb.classList.remove('active'); shell.style.opacity=1; shell.style.pointerEvents='auto';
+      $$('#shell .view').forEach(el=>{
+        if(el.dataset.view===v){el.classList.remove('leave');el.classList.add('active');el.querySelector('.body').scrollTop=0;}
+        else if(el.classList.contains('active')){el.classList.remove('active');el.classList.add('leave');setTimeout(()=>el.classList.remove('leave'),350);}
+      });
+      $('#kick').textContent=TITLES[v][1]; $('#ttl').textContent=TITLES[v][0];
+      $('#back').hidden=!['book','slot','track'].includes(v);
+      $$('.tabs button').forEach(b=>b.toggleAttribute('aria-current',b.dataset.tab===TAB[v])||0);
+      $$('.tabs button').forEach(b=>{ if(b.dataset.tab===TAB[v]) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
+    }
+    renderExplain(v==='onb'?'onb':v);
+    if(v==='slot') renderSlot();
+    if(v==='wallet') renderWallet();
+    if(v==='track' && prev!=='track') startTrack();
+  }
+
+  /* onboarding */
+  $('#onbNext').addEventListener('click',()=>{
+    if(S.onb<2){S.onb++;}else{show('home');return;}
+    $$('.onb-panel').forEach(p=>p.classList.toggle('active',+p.dataset.step===S.onb));
+    $$('.onb-dots i').forEach((d,i)=>d.classList.toggle('on',i<=S.onb));
+    $('#onbNext').textContent=S.onb<2?'Continue':'Go to home';
+  });
+
+  /* navigation */
+  document.addEventListener('click',e=>{
+    const n=e.target.closest('[data-nav]'); if(n){show(n.dataset.nav);return;}
+    const t=e.target.closest('[data-tab]'); if(t){show(t.dataset.tab);return;}
+    const j=e.target.closest('[data-go]'); if(j){
+      const g=j.dataset.go;
+      if(g==='onb'){S.onb=-1;$('#onbNext').click();show('onb');}
+      else if(g==='track'){if(!S.mode){S.mode='express';renderModes();}show('track');}
+      else show(g);
+    }
+  });
+  $('#back').addEventListener('click',()=>show(S.view==='slot'?'book':'home'));
+
+  /* book */
+  const MODES=[
+    {id:'express',name:'Express',desc:'Fixed rate card and bundles. Pick exactly what you need, no upsell.'},
+    {id:'diag',name:'Diagnostic',desc:'Car checked at the centre. Fixed quote before any work.'},
+    {id:'home',name:'Home Visit',desc:'Technician checks the car at home and takes it in if needed.'},
+    {id:'rsa',name:'RSA & Accident',desc:'Breakdown help, towing, insurance claim and body-shop tracker.'}];
+  const BUNDLES=[{name:'Periodic service',items:'Oil, filters, 40-point check',price:5400},{name:'Periodic + AC care',items:'Adds AC service and deep clean',price:6900},{name:'Brakes & tyres check',items:'Pads, discs, rotation, alignment',price:2200}];
+  const NOTES={diag:'Inspection is free. You get a fixed quote in the app and approve it before any work starts.',home:'A technician visits at your chosen slot. If the car needs the workshop, pickup is included.',rsa:'Help is sent to your live location. The claim and body-shop repair are tracked here.'};
+  function renderModes(){
+    $('#modes').innerHTML=MODES.map(m=>'<button type="button" class="pick" data-mode="'+m.id+'" aria-pressed="'+(S.mode===m.id)+'"><b style="font-size:15.5px">'+m.name+'</b><span class="sub" style="font-size:12.5px;line-height:1.4">'+m.desc+'</span></button>').join('');
+    $('#bundles').innerHTML=BUNDLES.map((b,i)=>'<button type="button" class="pick between" style="display:flex" data-bundle="'+i+'" aria-pressed="'+(S.bundle===i)+'"><span style="display:grid"><b style="font-size:14px">'+b.name+'</b><span class="sub">'+b.items+'</span></span><b class="num" style="font-size:15px">'+inr(b.price)+'</b></button>').join('');
+    $('#bundleWrap').classList.toggle('open',S.mode==='express');
+    $('#noteWrap').classList.toggle('open',!!S.mode&&S.mode!=='express');
+    if(NOTES[S.mode]) $('#modeNote').textContent=NOTES[S.mode];
+    $('#toSlot').disabled=!S.mode;
+  }
+  $('#modes').addEventListener('click',e=>{const b=e.target.closest('[data-mode]');if(!b)return;S.mode=b.dataset.mode;renderModes();});
+  $('#bundles').addEventListener('click',e=>{const b=e.target.closest('[data-bundle]');if(!b)return;S.bundle=+b.dataset.bundle;renderModes();});
+  $('#toSlot').addEventListener('click',()=>show('slot'));
+
+  /* slot */
+  const CENTRES=[{name:'Raam MG Kondapur',o:92,meta:'4.1 km · next free slot tomorrow'},{name:'Raam MG Attapur',o:46,meta:'9.8 km · best availability'},{name:'Raam MG Gachibowli',o:64,meta:'6.3 km · moderate'}];
+  const TIMES=[{t:'9:00 AM',off:false},{t:'11:30 AM',off:false},{t:'2:00 PM',off:true},{t:'3:30 PM',off:true}];
+  const base=()=>S.mode==='express'?BUNDLES[S.bundle].price:3900;
+  function renderSlot(){
+    $('#centres').innerHTML=CENTRES.map((c,i)=>{
+      const col=c.o>85?'#9E2A2B':c.o>60?'#B97A12':'#13776B', tag=c.o>85?'Very busy':c.o>60?'Moderate':'Quiet';
+      return '<button type="button" class="pick" data-centre="'+i+'" aria-pressed="'+(S.centre===i)+'" style="gap:7px"><span class="between"><b style="font-size:14.5px">'+c.name+'</b><span style="font-size:11.5px;font-weight:700;color:'+col+'">'+tag+' · '+c.o+'%</span></span><span class="bar"><i data-w="'+c.o+'" style="background:'+col+'"></i></span><span class="sub">'+c.meta+'</span></button>';
+    }).join('');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>$$('#centres .bar i').forEach(i=>i.style.width=i.dataset.w+'%')));
+    $('#times').innerHTML=TIMES.map((t,i)=>'<button type="button" class="pick" data-time="'+i+'" aria-pressed="'+(S.time===i)+'" style="min-height:58px"><b style="font-size:14.5px">'+t.t+'</b><span style="font-size:11px;font-weight:700;color:'+(t.off?'#13776B':'#5E6270')+'">'+(t.off?'Off-peak · +₹150 credit':'Busy hour')+'</span></button>').join('');
+    $('#quote').textContent=S.mode==='express'?inr(base()):'Free inspection';
+  }
+  function reselect(sel,attr,val){$$(sel).forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset[attr]===val)));}
+  $('#centres').addEventListener('click',e=>{const b=e.target.closest('[data-centre]');if(!b)return;S.centre=+b.dataset.centre;reselect('#centres .pick','centre',S.centre);});
+  $('#times').addEventListener('click',e=>{const b=e.target.closest('[data-time]');if(!b)return;S.time=+b.dataset.time;reselect('#times .pick','time',S.time);});
+  $('#pickup').addEventListener('change',e=>S.pickup=e.target.checked);
+  $('#confirm').addEventListener('click',()=>{
+    if(TIMES[S.time].off){S.credits+=150;}
+    show('track'); toast('Booking confirmed · '+CENTRES[S.centre].name.replace('Raam MG ','')+', '+TIMES[S.time].t+(TIMES[S.time].off?' · +₹150 credit':''));
+  });
+
+  /* tracking */
+  const STAGES=[['Picked up from home','Driver Ravi · 10:12 AM'],['Inspection','Technician Arjun'],['Your approval','Photo sent for any extra work'],['In service','Est. 1 hr 40 min'],['Quality check','Road test + checklist'],['Ready · dropping home','Arriving by 5:30 PM']];
+  function startTrack(){
+    Object.assign(S,{stage:0,extra:0,decided:false,paid:false,fixed:null});
+    $('#bookLine').textContent=CENTRES[S.centre].name.replace('Raam MG ','')+' · '+TIMES[S.time].t+(S.pickup?' · pickup':'');
+    renderTrack(); schedule();
+  }
+  function schedule(){
+    clearTimeout(S.timer);
+    if(S.view!=='track') return;
+    if(S.stage===2&&!S.decided) return;
+    if(S.stage>=5) return;
+    S.timer=setTimeout(()=>{S.stage++;renderTrack();toast(STAGES[S.stage][0]+(S.stage===2?' · action needed':''));schedule();},2000);
+  }
+  function renderTrack(){
+    $('#steps').innerHTML=STAGES.map((s,i)=>'<div class="step '+(i<S.stage?'done':i===S.stage?'now':'')+'"><span class="dot"></span><span style="display:grid"><span class="n">'+s[0]+'</span><span class="sub">'+s[1]+'</span></span></div>').join('');
+    $('#prog').style.width=(S.paid?100:(S.stage/5)*100)+'%';
+    $('#eta').textContent=S.paid?'Delivered home':S.stage>=5?'Ready · arriving 5:30 PM':'Ready by 5:30 PM';
+    const A=$('#trackAction'); let h='';
+    if(S.stage===2&&!S.decided){
+      h='<div class="card approve pop" style="display:grid;gap:9px"><span class="lbl" style="color:#9E2A2B">Approval needed</span><b style="font-size:16px">Front brake pads worn to 20%</b><div class="photo">Mechanic\'s photo / video</div><div class="between"><span class="sub" style="font-size:13px">Parts + labour, fixed</span><b class="num">₹2,450</b></div><span class="sub">Nothing is added to your bill unless you approve.</span><div class="g2"><button type="button" class="btn outline" id="decline">Decline</button><button type="button" class="btn" id="approve">Approve</button></div></div>';
+    } else if(S.stage>=5&&!S.paid){
+      const b=base(), t=b+S.extra;
+      h='<div class="card pop" style="display:grid;gap:7px"><div class="between"><span class="sub" style="font-size:13px">Quoted service</span><b class="num">'+inr(b)+'</b></div><div class="between"><span class="sub" style="font-size:13px">Approved extra work</span><b class="num">'+inr(S.extra)+'</b></div><div class="between" style="border-top:1px solid #F0EEEB;padding-top:7px"><b>Total, capped at approval</b><b class="big num" style="font-size:18px">'+inr(t)+'</b></div><button type="button" class="btn" id="pay">Pay from Harvest Wallet</button></div>';
+    } else if(S.paid&&S.fixed===null){
+      h='<div class="card pop" style="display:grid;gap:10px"><span class="lbl" style="color:#13776B">Paid · car dropped home · 48 hrs later</span><b style="font-size:17px">Is everything fixed?</b><div class="g2"><button type="button" class="btn outline" id="nofix">No, reopen</button><button type="button" class="btn okb" id="yesfix">Yes, all good</button></div></div>';
+    } else if(S.fixed!==null){
+      h='<div class="card pop" style="background:#E3F2EF;border-color:#E3F2EF;font-size:13.5px">'+(S.fixed?'Great. The service is logged on your VIN, your Loyalty Lock streak moves to 4 and your trade-in floor goes up. You can rate the service now.':'Reopened at no cost. Priya has been alerted and will call you within 10 minutes to arrange pickup.')+'</div><button type="button" class="btn darkb" data-nav="home">Back to home</button>';
+    } else {
+      h='<button type="button" class="btn ghost" id="skip">Skip to next update</button>';
+    }
+    A.innerHTML=h;
+  }
+  $('#trackAction').addEventListener('click',e=>{
+    const id=e.target.id;
+    if(id==='approve'||id==='decline'){S.extra=id==='approve'?2450:0;S.decided=true;S.stage=3;renderTrack();toast(id==='approve'?'Approved · ₹2,450 added to your capped bill':'Declined · bill stays at the quote');schedule();}
+    if(id==='skip'){clearTimeout(S.timer);S.stage=Math.min(5,S.stage+1);renderTrack();schedule();}
+    if(id==='pay'){const t=base()+S.extra;S.wallet=Math.max(0,S.wallet-t);S.paid=true;renderTrack();updateWalletAmt();toast('Paid '+inr(t)+' from Harvest Wallet');}
+    if(id==='nofix'){S.fixed=false;renderTrack();toast('Job reopened free · Priya alerted');}
+    if(id==='yesfix'){S.fixed=true;S.streak=4;renderTrack();toast('Service logged on your VIN');}
+  });
+
+  /* advisor chat */
+  const MSGS=[{me:0,t:'Hi Rahul, I am Priya, your advisor for the Hector. Message me here anytime.'},{me:1,t:'Hi Priya, when is my EV charger being installed?'},{me:0,t:'Booked for 30 Sep, 11 AM. The installer will call 30 minutes before.'}];
+  function renderMsgs(typing){
+    $('#msgs').innerHTML=MSGS.map(m=>'<div class="msg '+(m.me?'me':'them')+'">'+m.t.replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]))+'</div>').join('')+(typing?'<div class="typing" aria-label="Priya is typing"><i></i><i></i><i></i></div>':'');
+    const body=$('[data-view="advisor"] .body'); body.scrollTop=body.scrollHeight;
+  }
+  $('#compose').addEventListener('submit',e=>{
+    e.preventDefault(); const v=$('#draft').value.trim(); if(!v) return;
+    MSGS.push({me:1,t:v}); $('#draft').value=''; renderMsgs(true);
+    let secs=600; const sla=$('#sla');
+    clearInterval(S.sla);
+    const tick=()=>{const m=Math.floor(secs/60),s=String(secs%60).padStart(2,'0');sla.innerHTML='<span>Reply due in <b>'+m+':'+s+'</b> · escalates to the Service Manager if missed</span>';secs-=37;};
+    tick(); S.sla=setInterval(tick,120);
+    setTimeout(()=>{clearInterval(S.sla);MSGS.push({me:0,t:'Got it. I am checking with the workshop and will update you here.'});renderMsgs(false);sla.innerHTML='<span>Replied in <b>2 min</b> · within the 10-minute promise</span>';},1900);
+  });
+
+  /* wallet */
+  function updateWalletAmt(){$$('.wallet-amt').forEach(el=>el.textContent=inr(S.wallet));}
+  function renderWallet(){
+    $('#months').innerHTML=Array.from({length:11},(_,i)=>'<i class="'+(i<8?'paid':i===10?'bonus':'')+'" style="animation-delay:'+(i*45)+'ms"></i>').join('');
+    $('#credits').textContent=inr(S.credits); $('#streak').textContent=S.streak+' on-time';
+    const el=$('[data-view="wallet"] .wallet-amt'); const target=S.wallet; let t0=null;
+    const step=ts=>{if(!t0)t0=ts;const p=Math.min(1,(ts-t0)/700);el.textContent=inr(Math.round(target*(1-Math.pow(1-p,3))));if(p<1)requestAnimationFrame(step);};
+    requestAnimationFrame(step);
+  }
+
+  /* toast */
+  let tt;
+  function toast(msg){const t=$('#toast');$('#toastText').textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2300);}
+
+  renderModes(); renderMsgs(false); show('onb');
+})();
+</script>
+
+</body></html>
